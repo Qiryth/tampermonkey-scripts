@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Codecks Clockify
 // @namespace    http://tampermonkey.net/
-// @version      1.0.1
+// @version      1.0.2
 // @description  Clockify in Codecks
 // @author       Qiryth
 // @match        https://plausch.codecks.io/*
@@ -234,7 +234,7 @@
             method: "POST",
             url: `https://api.clockify.me/api/v1/workspaces/${ClockifyWorkspaceId}/time-entries`,
             headers: { "X-Api-Key": ClockifyApiKey, "Content-Type": "application/json" },
-            data: JSON.stringify({ "billable": false, "description": `${GetFormattedCardPath()}`, "projectId": `${ClockifyProjectId}` }),
+            data: JSON.stringify({ "billable": true, "description": `${GetFormattedCardPath()}`, "projectId": `${ClockifyProjectId}` }),
             onload: response => UpdateUI(false, CurrentSeconds),
             onerror: error => console.error("Error starting time entry:", error)
         });
