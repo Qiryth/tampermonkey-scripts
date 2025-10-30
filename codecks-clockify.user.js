@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Codecks Clockify
 // @namespace    http://tampermonkey.net/
-// @version      1.0.0
+// @version      1.0.1
 // @description  Clockify in Codecks
 // @author       Qiryth
 // @match        https://plausch.codecks.io/*
@@ -161,27 +161,24 @@
 
     // Injection
     const app = document.getElementById('app');
-    window.navigation.addEventListener("navigatesuccess", () => {
+
+    let LastHref = "";
+    const AppObserver = new MutationObserver(() => {
+        if (location.href === LastHref) return;
+
         if (window.location.pathname.startsWith("/card/")) {
             const CardDetails = app.querySelector('div[data-cdx-context="CardDetail"]');
+            if (!CardDetails) return;
+
+            LastHref = location.href;
             const selectedCardElement = CardDetails.querySelector('div.d-flex.flexDir-column.minHeight-0.sp-12px');
             selectedCardElement.appendChild(Clockify);
             CheckCurrentTime();
-        }
+        } else {
+            LastHref = location.href;
+        };
     });
-
-    const OneTimeObserver = new MutationObserver(mutations => {
-        const CardDetails = app.querySelector('div[data-cdx-context="CardDetail"]');
-        if (!CardDetails) return;
-
-        OneTimeObserver.disconnect();
-        const selectedCardElement = CardDetails.querySelector('div.d-flex.flexDir-column.minHeight-0.sp-12px');
-        selectedCardElement.appendChild(Clockify);
-        CheckCurrentTime();
-    });
-
-    if (window.location.pathname.startsWith("/card/")) OneTimeObserver.observe(app, { childList: true, subtree: true });
-
+    AppObserver.observe(app, { childList: true, subtree: true })
 
     // Helper Function
     var GetFormattedCardPath = function() {
